@@ -86,6 +86,7 @@ class _HomeState extends State<Home> {
                             ),
                             child: ListTile(
                               onTap: () {
+                                print('${url}');
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -114,9 +115,18 @@ class _HomeState extends State<Home> {
                                 ),
                               ),
                               title: Text(nameee),
-                              leading: CircleAvatar(
-                                radius: 25,
-                                child: Image.network(data[url]),
+                              leading: Container(
+                                height: 80,
+                                width: 80,
+                                child:
+                                    // data.containsKey('images')
+                                    //     ?
+                                    Image.network(
+                                  '${url}',
+                                  height: 80,
+                                  width: 80,
+                                ),
+                                // : Container()
                               ),
                               subtitle: Row(
                                 children: [
@@ -167,13 +177,12 @@ class _HomeState extends State<Home> {
                                 ),
                               ),
                               title: Text(nameee),
-                              leading: CircleAvatar(
-                                radius: 25,
-                                child: Text(
-                                  data['name'][0].toString().toUpperCase(),
-                                  style: TextStyle(fontSize: 20),
-                                ),
-                              ),
+                              leading: Container(
+                                  height: 80,
+                                  width: 80,
+                                  child: data.containsKey('images')
+                                      ? Image.network('${data['images']}')
+                                      : Container()),
                               subtitle: Row(
                                 children: [
                                   Column(

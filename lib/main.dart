@@ -1,11 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebaseownpractice/firebase_options.dart';
-import 'package:firebaseownpractice/home.dart';
-import 'package:firebaseownpractice/login.dart';
+import '../firebase_options.dart';
+import '../home.dart';
+import '../login.dart';
 import 'package:flutter/material.dart';
-
-import 'package:firebase/firebase.dart' as firebase;
+// import 'package:firebase/firebase.dart' as firebase;
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 void main() async {

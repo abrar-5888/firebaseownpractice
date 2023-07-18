@@ -1,4 +1,4 @@
-import 'package:firebaseownpractice/signup.dart';
+import '../signup.dart';
 import 'package:flutter/material.dart';
 import 'Function/functions.dart';
 

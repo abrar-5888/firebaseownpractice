@@ -1,15 +1,15 @@
-import 'dart:html';
-import 'dart:io';
+// import 'dart:html';
+// import 'dart:io';
 import 'dart:typed_data';
-import 'package:js/js.dart';
+// import 'package:js/js.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase/firebase.dart' as fb;
-import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase/firebase.dart' as fb;
+// import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:firebaseownpractice/Function/functions.dart';
+import 'Function/functions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+// import 'package:image_picker/image_picker.dart';
 
 class Cart extends StatefulWidget {
   const Cart({super.key});
@@ -107,6 +107,14 @@ class _CartState extends State<Cart> {
                   selectAndUploadImage();
                 },
                 icon: Icon(Icons.camera_alt)),
+          ),
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextButton(onPressed: () {}, child: Text("Show")),
+              ),
+            ],
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),

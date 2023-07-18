@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebaseownpractice/cart.dart';
-import 'package:firebaseownpractice/update.dart';
+import '../cart.dart';
+import '../update.dart';
 import 'Function/functions.dart';
 import 'package:flutter/material.dart';
 
@@ -63,7 +63,7 @@ class _HomeState extends State<Home> {
                       itemBuilder: (BuildContext context, int index) {
                         final document = snapshot.data!.docs[index];
                         final data = document.data();
-                        final urll = snapshot.data;
+                        // final urll = snapshot.data;
                         var url = (data as Map<String, dynamic>)['image'];
                         var id = document.id;
 

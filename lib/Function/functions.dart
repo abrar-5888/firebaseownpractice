@@ -1,6 +1,6 @@
-import 'package:firebaseownpractice/login.dart';
+import '../login.dart';
 import 'package:flutter/material.dart';
-import 'package:firebaseownpractice/home.dart';
+import '../home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

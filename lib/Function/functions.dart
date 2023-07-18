@@ -1,6 +1,10 @@
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
+
 import '../login.dart';
 import 'package:flutter/material.dart';
 import '../home.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -153,8 +157,39 @@ void updateData(
   }
 }
 
+// Upload Image
 
-// Search Widet
+Future<void> selectAndUploadImage() async {
+  final result = await FilePicker.platform.pickFiles(
+    type: FileType.image,
+    allowMultiple: false,
+  );
 
+  if (result != null) {
+    final file = result.files.single;
+    final blob = blobFromUint8List(file.bytes!);
 
+    final storageRef = firebase_storage.FirebaseStorage.instance
+        .ref()
+        .child('images/${DateTime.now().millisecondsSinceEpoch}');
 
+    final uploadTask = storageRef.putData(blob);
+    uploadTask.then((snapshot) async {
+      if (snapshot.state == firebase_storage.TaskState.success) {
+        final downloadUrl = await snapshot.ref.getDownloadURL();
+
+        print('Image uploaded successfully. Download URL: $downloadUrl');
+      } else {
+        print('Image upload failed.');
+      }
+    }).catchError((error) {
+      print('Error during image upload: $error');
+    });
+  } else {
+    print('No image selected.');
+  }
+}
+
+Uint8List blobFromUint8List(Uint8List uint8List) {
+  return uint8List;
+}

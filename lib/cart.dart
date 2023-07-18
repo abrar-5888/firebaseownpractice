@@ -1,15 +1,5 @@
-// import 'dart:html';
-// import 'dart:io';
-import 'dart:typed_data';
-// import 'package:js/js.dart';
-import 'package:file_picker/file_picker.dart';
-// import 'package:firebase/firebase.dart' as fb;
-// import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'Function/functions.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-// import 'package:image_picker/image_picker.dart';
 
 class Cart extends StatefulWidget {
   const Cart({super.key});
@@ -23,10 +13,10 @@ class _CartState extends State<Cart> {
   TextEditingController name = TextEditingController();
   TextEditingController price = TextEditingController();
   TextEditingController description = TextEditingController();
+  String Iurl = "";
 
   @override
   Widget build(BuildContext context) {
-    String Iurl = '';
     return Scaffold(
       appBar: AppBar(
         title: Text("Add a Product"),
@@ -108,14 +98,6 @@ class _CartState extends State<Cart> {
                 },
                 icon: Icon(Icons.camera_alt)),
           ),
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextButton(onPressed: () {}, child: Text("Show")),
-              ),
-            ],
-          ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
@@ -148,37 +130,9 @@ class _CartState extends State<Cart> {
     );
   }
 
-  Future<void> selectAndUploadImage() async {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-      allowMultiple: false,
-    );
-
-    if (result != null) {
-      final file = result.files.single;
-      final blob = blobFromUint8List(file.bytes!);
-
-      final storageRef = firebase_storage.FirebaseStorage.instance
-          .ref()
-          .child('images/${DateTime.now().millisecondsSinceEpoch}');
-
-      final uploadTask = storageRef.putData(blob);
-      uploadTask.then((snapshot) async {
-        if (snapshot.state == firebase_storage.TaskState.success) {
-          downloadUrl = await snapshot.ref.getDownloadURL();
-          print('Image uploaded successfully. Download URL: $downloadUrl');
-        } else {
-          print('Image upload failed.');
-        }
-      }).catchError((error) {
-        print('Error during image upload: $error');
-      });
-    } else {
-      print('No image selected.');
+  void show() {
+    if (Iurl == "") {
+      print("url not found");
     }
-  }
-
-  Uint8List blobFromUint8List(Uint8List uint8List) {
-    return uint8List;
   }
 }

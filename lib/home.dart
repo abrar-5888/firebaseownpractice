@@ -118,10 +118,7 @@ class _HomeState extends State<Home> {
                               leading: Container(
                                 height: 80,
                                 width: 80,
-                                child:
-                                    // data.containsKey('images')
-                                    //     ?
-                                    Image.network(
+                                child: Image.network(
                                   '${url}',
                                   height: 80,
                                   width: 80,
@@ -178,11 +175,15 @@ class _HomeState extends State<Home> {
                               ),
                               title: Text(nameee),
                               leading: Container(
+                                height: 80,
+                                width: 80,
+                                child: Image.network(
+                                  '${url}',
                                   height: 80,
                                   width: 80,
-                                  child: data.containsKey('images')
-                                      ? Image.network('${data['images']}')
-                                      : Container()),
+                                ),
+                                // : Container()
+                              ),
                               subtitle: Row(
                                 children: [
                                   Column(

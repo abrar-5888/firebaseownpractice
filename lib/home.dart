@@ -1,35 +1,71 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import './users.dart';
 import '../cart.dart';
 import '../update.dart';
 import 'Function/functions.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
+  final String email;
+
+  Home({
+    required this.email,
+  });
+
   @override
-  State<Home> createState() => _HomeState();
+  State<Home> createState() => HomeState();
 }
 
-class _HomeState extends State<Home> {
+class HomeState extends State<Home> {
   String searc = "";
+  TextEditingController searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    searchController.dispose(); // Dispose the TextEditingController
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    var users = FirebaseFirestore.instance.collection("users").snapshots();
-    TextEditingController searchController = TextEditingController();
+    bool isupdateallow = to();
+    bool isdeleteallow = todelete();
 
-    void dispose() {
-      searchController.dispose(); // Dispose the TextEditingController
-      super.dispose();
-    }
+    String emails = widget.email;
+
+    var users = FirebaseFirestore.instance.collection("users").snapshots();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Practice"),
+        title: Text("Home"),
         actions: [
-          IconButton(
-            onPressed: () {
-              signout(context);
-            },
-            icon: Icon(Icons.logout),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: IconButton(
+                onPressed: () {
+                  if (emails == "admin@gmail.com") {
+                    // fetchData();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Users(email: emails),
+                        ));
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('You are unable to Access this page !')));
+                  }
+                },
+                icon: Icon(Icons.person)),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: IconButton(
+              onPressed: () {
+                signout(context);
+              },
+              icon: Icon(Icons.logout),
+            ),
           ),
         ],
         automaticallyImplyLeading: false,
@@ -62,8 +98,7 @@ class _HomeState extends State<Home> {
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (BuildContext context, int index) {
                         final document = snapshot.data!.docs[index];
-                        final data = document.data();
-                        // final urll = snapshot.data;
+                        final data = document.data() as Map<String, dynamic>?;
                         var url = (data as Map<String, dynamic>)['image'];
                         var id = document.id;
 
@@ -85,14 +120,21 @@ class _HomeState extends State<Home> {
                               border: Border.all(color: Colors.black, width: 1),
                             ),
                             child: ListTile(
+                              enabled: isupdateallow,
                               onTap: () {
-                                print('${url}');
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Update(nameee,
-                                          descriptionnn, priceee, id, url)),
-                                );
+                                if (isupdateallow == true) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Update(nameee,
+                                            descriptionnn, priceee, id, url)),
+                                  );
+                                } else if (isupdateallow == false) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text(
+                                              'You are unable to Update any field !')));
+                                }
                               },
                               trailing: Container(
                                 decoration: BoxDecoration(
@@ -104,9 +146,17 @@ class _HomeState extends State<Home> {
                                 child: IconButton(
                                   iconSize: 15,
                                   onPressed: () {
-                                    var collection = FirebaseFirestore.instance
-                                        .collection('users');
-                                    collection.doc(id).delete();
+                                    if (isdeleteallow == true) {
+                                      var collection = FirebaseFirestore
+                                          .instance
+                                          .collection('users');
+                                      collection.doc(id).delete();
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(
+                                                  'You are unable to Delete any field !')));
+                                    }
                                   },
                                   icon: Icon(
                                     Icons.delete,
@@ -129,8 +179,8 @@ class _HomeState extends State<Home> {
                                 children: [
                                   Column(
                                     children: [
-                                      Text(data['description']),
-                                      Text(data['price']),
+                                      Text(descriptionnn),
+                                      Text(priceee),
                                     ],
                                   ),
                                 ],
@@ -145,13 +195,21 @@ class _HomeState extends State<Home> {
                               border: Border.all(color: Colors.black, width: 1),
                             ),
                             child: ListTile(
+                              enabled: isupdateallow,
                               onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Update(nameee,
-                                          descriptionnn, priceee, id, url)),
-                                );
+                                if (isupdateallow == true) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Update(nameee,
+                                            descriptionnn, priceee, id, url)),
+                                  );
+                                } else if (isupdateallow == false) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text(
+                                              'You are unable to Update any field !')));
+                                }
                               },
                               trailing: Container(
                                 decoration: BoxDecoration(
@@ -163,9 +221,17 @@ class _HomeState extends State<Home> {
                                 child: IconButton(
                                   iconSize: 15,
                                   onPressed: () {
-                                    var collection = FirebaseFirestore.instance
-                                        .collection('users');
-                                    collection.doc(id).delete();
+                                    if (isdeleteallow == true) {
+                                      var collection = FirebaseFirestore
+                                          .instance
+                                          .collection('users');
+                                      collection.doc(id).delete();
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(
+                                                  'You are unable to Delete any field !')));
+                                    }
                                   },
                                   icon: Icon(
                                     Icons.delete,
@@ -181,8 +247,8 @@ class _HomeState extends State<Home> {
                                   '${url}',
                                   height: 80,
                                   width: 80,
+                                  scale: 1.0,
                                 ),
-                                // : Container()
                               ),
                               subtitle: Row(
                                 children: [

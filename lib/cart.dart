@@ -1,3 +1,11 @@
+// import 'dart:js_interop';
+// import 'dart:typed_data';
+// import 'package:file_picker/file_picker.dart';
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+
 import 'Function/functions.dart';
 import 'package:flutter/material.dart';
 
@@ -9,11 +17,17 @@ class Cart extends StatefulWidget {
 }
 
 class _CartState extends State<Cart> {
-  var downloadUrl = '';
+  // var iurl;
+  // void cart(var url) {
+  //   setState(() {
+  //     iurl = url;
+  //   });
+  // }
+
   TextEditingController name = TextEditingController();
   TextEditingController price = TextEditingController();
   TextEditingController description = TextEditingController();
-  String Iurl = "";
+  var downloadUrl = "";
 
   @override
   Widget build(BuildContext context) {
@@ -47,61 +61,18 @@ class _CartState extends State<Cart> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: IconButton(
-                onPressed: () async {
-                  // ImagePicker imagePicker = ImagePicker();
-                  // XFile? file =
-                  //     await imagePicker.pickImage(source: ImageSource.camera);
-                  // print('${file?.path}');
-                  // if (file == null) {
-                  //   print('No imae selected');
-                  // } else {
-                  //   String uniquefilename =
-                  //       DateTime.now().millisecondsSinceEpoch.toString();
-
-                  //   Reference reference = FirebaseStorage.instance.ref();
-                  //   Reference dir_refer = reference.child('Images');
-                  //   Reference iuploaded = dir_refer.child(uniquefilename);
-                  //   try {
-                  //     await iuploaded.putFile(File(file.path));
-                  //     Iurl = await iuploaded.getDownloadURL();
-                  //   } catch (error) {
-                  //     print(
-                  //         // 'error'
-                  //         error.toString());
-                  //   }
-                  // }
-
-                  // PlatformFile? _imageFile;
-                  // try {
-                  //   // Pick an image file using file_picker package
-                  //   FilePickerResult? result =
-                  //       await FilePicker.platform.pickFiles(
-                  //     type: FileType.image,
-                  //   );
-
-                  //   // If user cancels the picker, do nothing
-                  //   if (result == null) return;
-
-                  //   // If user picks an image, update the state with the new image file
-                  //   setState(() {
-                  //     _imageFile = result.files.first;
-                  //   });
-                  // } catch (e) {
-                  //   // If there is an error, show a snackbar with the error message
-                  //   ScaffoldMessenger.of(context).showSnackBar(
-                  //     SnackBar(
-                  //       content: Text(e.toString()),
-                  //     ),
-                  //   );
-                  // }
-                  selectAndUploadImage();
-                },
-                icon: Icon(Icons.camera_alt)),
+                icon: Icon(Icons.camera_alt),
+                onPressed: () {
+                  selectanduploadimage();
+                }),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
               onPressed: () {
+                if (downloadUrl.isEmpty) {
+                  print("Image url is empty");
+                }
                 add_data(name, price, description, downloadUrl);
                 name.clear();
                 price.clear();
@@ -130,9 +101,24 @@ class _CartState extends State<Cart> {
     );
   }
 
-  void show() {
-    if (Iurl == "") {
-      print("url not found");
+  void selectanduploadimage() async {
+    String unique_name = DateTime.now().millisecondsSinceEpoch.toString();
+    ImagePicker imagePicker = ImagePicker();
+    XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
+    print('path == ${file?.path}');
+    if (file == null) {
+      print("File is empty");
+    } else {
+      try {
+        Reference referenceroot = FirebaseStorage.instance.ref();
+        Reference reference = referenceroot.child('images');
+        Reference refer = reference.child(unique_name);
+        await refer.putFile(File('${file.path}'));
+        downloadUrl = await refer.getDownloadURL();
+        print("Upload sucessfull");
+      } catch (e) {
+        print(e.toString());
+      }
     }
   }
 }

@@ -22,7 +22,9 @@ class Main extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: (FirebaseAuth.instance.currentUser != null) ? Home() : Login(),
+      home: (FirebaseAuth.instance.currentUser != null)
+          ? Home(email: FirebaseAuth.instance.currentUser!.email!)
+          : Login(),
       builder: EasyLoading.init(),
     );
   }

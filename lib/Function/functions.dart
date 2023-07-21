@@ -1,10 +1,6 @@
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
-
 import '../login.dart';
 import 'package:flutter/material.dart';
 import '../home.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -22,18 +18,36 @@ void signin(TextEditingController emailcontroller,
       EasyLoading.show(status: "Loading");
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: pass);
+
       EasyLoading.dismiss();
+
       if (userCredential != null) {
+        await saveEmailToFirestore(email);
         Navigator.popUntil(context, (route) => route.isFirst);
+
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => Home(),
+              builder: (context) => Home(email: email),
             ));
       }
     } on FirebaseAuthException catch (ex) {
       EasyLoading.showError(ex.code.toString());
     }
+  }
+}
+
+// save email to firestore
+
+Future<void> saveEmailToFirestore(String email) async {
+  try {
+    await FirebaseFirestore.instance.collection('emails').doc(email).set({
+      'email': email,
+      'isupdateAllowed': isupdateallowu,
+      'isdeleteAllowed': isdeleteallowu
+    });
+  } catch (e) {
+    print("Error saving email to Firestore: $e");
   }
 }
 
@@ -57,8 +71,10 @@ void Create_Account(
       EasyLoading.show(status: "Loading");
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: pass);
+
       EasyLoading.dismiss();
       if (userCredential != null) {
+        await saveEmailToFirestore(email);
         Navigator.pop(context);
         print("user created");
       }
@@ -157,39 +173,26 @@ void updateData(
   }
 }
 
-// Upload Image
-
-Future<void> selectAndUploadImage() async {
-  final result = await FilePicker.platform.pickFiles(
-    type: FileType.image,
-    allowMultiple: false,
-  );
-
-  if (result != null) {
-    final file = result.files.single;
-    final blob = blobFromUint8List(file.bytes!);
-
-    final storageRef = firebase_storage.FirebaseStorage.instance
-        .ref()
-        .child('images/${DateTime.now().millisecondsSinceEpoch}');
-
-    final uploadTask = storageRef.putData(blob);
-    uploadTask.then((snapshot) async {
-      if (snapshot.state == firebase_storage.TaskState.success) {
-        final downloadUrl = await snapshot.ref.getDownloadURL();
-
-        print('Image uploaded successfully. Download URL: $downloadUrl');
-      } else {
-        print('Image upload failed.');
-      }
-    }).catchError((error) {
-      print('Error during image upload: $error');
-    });
-  } else {
-    print('No image selected.');
-  }
+//test
+bool isupdateallowu = true;
+bool isdeleteallowu = true;
+void allowupdate(bool allowbtn) {
+  isupdateallowu = allowbtn;
 }
 
-Uint8List blobFromUint8List(Uint8List uint8List) {
-  return uint8List;
+bool to() {
+  print(isupdateallowu);
+
+  return isupdateallowu;
 }
+
+void allowdelete(bool allowbtn) {
+  isdeleteallowu = allowbtn;
+}
+
+bool todelete() {
+  print(isdeleteallowu);
+  return isdeleteallowu;
+}
+
+// allow delete from firebase

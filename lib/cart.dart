@@ -17,13 +17,6 @@ class Cart extends StatefulWidget {
 }
 
 class _CartState extends State<Cart> {
-  // var iurl;
-  // void cart(var url) {
-  //   setState(() {
-  //     iurl = url;
-  //   });
-  // }
-
   TextEditingController name = TextEditingController();
   TextEditingController price = TextEditingController();
   TextEditingController description = TextEditingController();
@@ -33,7 +26,7 @@ class _CartState extends State<Cart> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add a Product"),
+        title: Text("Add Product"),
       ),
       body: Center(
         child: Column(children: [

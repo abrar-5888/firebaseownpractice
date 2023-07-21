@@ -45,7 +45,7 @@ class _UpdateState extends State<Update> {
     price.text = widget.priceee;
     return Scaffold(
       appBar: AppBar(
-        title: Text("Update a Product"),
+        title: Text("Update"),
       ),
       body: Center(
         child: Column(children: [

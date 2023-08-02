@@ -81,9 +81,10 @@ class HomeState extends State<Home> {
             bottom: Radius.circular(10),
           ),
         ),
-        backgroundColor: Colors.indigo,
+        backgroundColor: Colors.orange,
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.amber,
         onPressed: () {
           Navigator.push(
             context,
@@ -98,7 +99,7 @@ class HomeState extends State<Home> {
         padding: EdgeInsets.all(25),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.indigo, Colors.deepPurple],
+            colors: [Colors.deepOrange, Colors.orange],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),

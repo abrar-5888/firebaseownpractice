@@ -20,7 +20,7 @@ void signin(TextEditingController emailcontroller,
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: pass);
 
-      EasyLoading.dismiss();
+      EasyLoading.showSuccess("Success ");
 
       if (userCredential != null) {
         await saveEmailToFirestore(email);
@@ -75,7 +75,7 @@ void Create_Account(
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: pass);
 
-      EasyLoading.dismiss();
+      EasyLoading.showSuccess("Success ");
       if (userCredential != null) {
         await saveEmailToFirestore(email);
         Navigator.pop(context);

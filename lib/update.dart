@@ -49,7 +49,7 @@ class _UpdateState extends State<Update> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Update"),
-        backgroundColor: Colors.indigo,
+        backgroundColor: Colors.orange,
       ),
       body: SingleChildScrollView(
         child: SizedBox(
@@ -58,7 +58,7 @@ class _UpdateState extends State<Update> {
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.indigo, Colors.deepPurple],
+                colors: [Colors.deepOrange, Colors.orange],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),

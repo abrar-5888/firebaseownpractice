@@ -27,11 +27,11 @@ class UsersState extends State<Users> {
     String email = widget.email;
     return Scaffold(
       appBar:
-          AppBar(title: Text("Admin Panel"), backgroundColor: Colors.indigo),
+          AppBar(title: Text("Admin Panel"), backgroundColor: Colors.orange),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.indigo, Colors.deepPurple],
+            colors: [Colors.deepOrange, Colors.orange],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),

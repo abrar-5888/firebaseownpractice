@@ -14,7 +14,6 @@ void main() async {
   runApp(
     Main(),
   );
-  // configLoading();
 }
 
 class Main extends StatelessWidget {

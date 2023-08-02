@@ -1,109 +1,122 @@
-import '../signup.dart';
 import 'package:flutter/material.dart';
 import 'Function/functions.dart';
-import './users.dart';
+import '../signup.dart';
 
 class Login extends StatefulWidget {
-  const Login({super.key});
+  const Login({Key? key}) : super(key: key);
 
   @override
   State<Login> createState() => _LoginState();
 }
 
 class _LoginState extends State<Login> {
-  bool show_pass = true;
-  TextEditingController _emailcontroller = TextEditingController();
-  TextEditingController _passcontroller = TextEditingController();
+  bool showPass = true;
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('login'),
+        title: Text('Login'),
         centerTitle: true,
+        backgroundColor: Colors.deepOrange,
       ),
       body: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.deepOrange, Colors.orange],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
         child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: _emailcontroller,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                        hintText: 'Email ', prefixIcon: Icon(Icons.email)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.lock_outline,
+                size: 64,
+                color: Colors.white,
+              ),
+              SizedBox(height: 16),
+              TextFormField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  prefixIcon: Icon(Icons.email, color: Colors.white),
+                  border: OutlineInputBorder(),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                  labelStyle: TextStyle(color: Colors.white),
+                ),
+                style: TextStyle(color: Colors.white),
+              ),
+              SizedBox(height: 16),
+              TextFormField(
+                controller: _passController,
+                obscureText: showPass,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  prefixIcon: Icon(Icons.lock, color: Colors.white),
+                  suffixIcon: TextButton(
+                    child: Text(
+                      showPass ? 'Show Password' : 'Hide Password',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        showPass = !showPass;
+                      });
+                    },
+                  ),
+                  border: OutlineInputBorder(),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                  labelStyle: TextStyle(color: Colors.white),
+                ),
+                style: TextStyle(color: Colors.white),
+              ),
+              SizedBox(height: 32),
+              ElevatedButton(
+                onPressed: () {
+                  signin(_emailController, _passController, context);
+                },
+                child: Text("Login"),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.amber[300],
+                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: _passcontroller,
-                    obscureText: show_pass,
-                    decoration: InputDecoration(
-                        hintText: 'Password ',
-                        suffixIcon: TextButton(
-                          child: Text(
-                            "Show Password",
-                            style: TextStyle(color: Colors.lightBlue[100]),
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              if (show_pass == true) {
-                                show_pass = false;
-                              } else if (show_pass == false) {
-                                show_pass = true;
-                              }
-                            });
-                          },
-                        ),
-                        prefixIcon: Icon(Icons.password)),
-                  ),
+              ),
+              SizedBox(height: 16),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Signup(),
+                    ),
+                  );
+                },
+                child: Text(
+                  "Create Account",
+                  style: TextStyle(color: Colors.lightBlue[200]),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Center(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            signin(_emailcontroller, _passcontroller, context);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              "Login",
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20,
-                              ),
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.amber[300]),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Signup(),
-                              ));
-                        },
-                        child: Text(
-                          "Create Account",
-                          style: TextStyle(color: Colors.lightBlue[200]),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

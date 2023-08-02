@@ -31,81 +31,115 @@ class _UpdateState extends State<Update> {
   final document = FirebaseFirestore.instance.collection('users').snapshots();
 
   TextEditingController name = TextEditingController();
-
   TextEditingController price = TextEditingController();
-
   TextEditingController description = TextEditingController();
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     name.text = widget.nameee;
     description.text = widget.descriptionnn;
+    price.text = widget.priceee;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     String id = widget.id;
 
-    price.text = widget.priceee;
     return Scaffold(
       appBar: AppBar(
         title: Text("Update"),
+        backgroundColor: Colors.indigo,
       ),
-      body: Center(
-        child: Column(children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: name,
-              decoration: InputDecoration(hintText: 'New Product Name '),
+      body: SingleChildScrollView(
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height,
+          child: Container(
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.indigo, Colors.deepPurple],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(15),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: description,
-              decoration: InputDecoration(hintText: 'New Product Description '),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: price,
-              decoration: InputDecoration(hintText: 'New Product Price '),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: IconButton(
-                onPressed: () async {
-                  selectAndUpdateImage();
-                },
-                icon: Icon(Icons.camera_alt)),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
-              onPressed: () async {
-                updateData(name, price, description, id, downloadUrl);
-                name.clear();
-                price.clear();
-                description.clear();
-                Navigator.pop(context);
-              },
-              child: Text(
-                "Update Product",
-                style: TextStyle(
-                  fontSize: 17,
-                  color: Colors.black,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextFormField(
+                  controller: name,
+                  decoration: InputDecoration(
+                    labelText: 'New Product Name',
+                    border: OutlineInputBorder(),
+                    labelStyle: TextStyle(color: Colors.white),
+                  ),
+                  style: TextStyle(color: Colors.white),
                 ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orangeAccent,
-                shape: BeveledRectangleBorder(
-                    side: BorderSide(
-                  color: Colors.black,
-                  width: 1,
-                )),
-              ),
+                SizedBox(height: 16),
+                TextFormField(
+                  controller: description,
+                  decoration: InputDecoration(
+                    labelText: 'New Product Description',
+                    border: OutlineInputBorder(),
+                    labelStyle: TextStyle(color: Colors.white),
+                  ),
+                  style: TextStyle(color: Colors.white),
+                ),
+                SizedBox(height: 16),
+                TextFormField(
+                  controller: price,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'New Product Price',
+                    border: OutlineInputBorder(),
+                    labelStyle: TextStyle(color: Colors.white),
+                  ),
+                  style: TextStyle(color: Colors.white),
+                ),
+                SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    await selectAndUpdateImage();
+                  },
+                  icon: Icon(Icons.camera_alt),
+                  label: Text('Select and Update Image'),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.orangeAccent,
+                  ),
+                ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () async {
+                    updateData(name, price, description, id, downloadUrl);
+                    name.clear();
+                    price.clear();
+                    description.clear();
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    "Update Product",
+                    style: TextStyle(
+                      fontSize: 17,
+                      color: Colors.black,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.orangeAccent,
+                    shape: BeveledRectangleBorder(
+                      side: BorderSide(
+                        color: Colors.black,
+                        width: 1,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ]),
+        ),
       ),
     );
   }
@@ -130,10 +164,10 @@ class _UpdateState extends State<Update> {
           downloadUrl = await snapshot.ref.getDownloadURL();
           print('Image updated successfully. Download URL: $downloadUrl');
         } else {
-          print('Image updated failed.');
+          print('Image update failed.');
         }
       }).catchError((error) {
-        print('Error during image upadte: $error');
+        print('Error during image update: $error');
       });
     } else {
       print('No image selected.');

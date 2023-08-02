@@ -11,6 +11,7 @@ void signin(TextEditingController emailcontroller,
     TextEditingController passcontroller, BuildContext context) async {
   String email = emailcontroller.text.trim();
   String pass = passcontroller.text.trim();
+  String userid;
   if (email == "" || pass == "") {
     print("Plz fill all fields ! ");
   } else {
@@ -23,6 +24,8 @@ void signin(TextEditingController emailcontroller,
 
       if (userCredential != null) {
         await saveEmailToFirestore(email);
+        userid = FirebaseAuth.instance.currentUser!.uid;
+        print(userid);
         Navigator.popUntil(context, (route) => route.isFirst);
 
         Navigator.pushReplacement(

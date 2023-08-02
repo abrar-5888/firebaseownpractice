@@ -1,6 +1,3 @@
-// import 'dart:js_interop';
-// import 'dart:typed_data';
-// import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
@@ -10,7 +7,7 @@ import 'Function/functions.dart';
 import 'package:flutter/material.dart';
 
 class Cart extends StatefulWidget {
-  const Cart({super.key});
+  const Cart({Key? key});
 
   @override
   State<Cart> createState() => _CartState();
@@ -27,75 +24,108 @@ class _CartState extends State<Cart> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Add Product"),
+        backgroundColor: Colors.indigo,
       ),
-      body: Center(
-        child: Column(children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: name,
-              decoration: InputDecoration(hintText: 'Product Name '),
-            ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.indigo, Colors.deepPurple],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: description,
-              decoration: InputDecoration(hintText: 'Product Description '),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: price,
-              decoration: InputDecoration(hintText: 'Product Price '),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: IconButton(
-                icon: Icon(Icons.camera_alt),
-                onPressed: () {
-                  selectanduploadimage();
-                }),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
-              onPressed: () {
-                if (downloadUrl.isEmpty) {
-                  print("Image url is empty");
-                }
-                add_data(name, price, description, downloadUrl);
-                name.clear();
-                price.clear();
-                description.clear();
-                Navigator.pop(context);
-              },
-              child: Text(
-                "Add Product",
-                style: TextStyle(
-                  fontSize: 17,
-                  color: Colors.black,
+        ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextFormField(
+                  controller: name,
+                  decoration: InputDecoration(
+                    labelText: 'Product Name',
+                    labelStyle: TextStyle(color: Colors.white),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    border: OutlineInputBorder(),
+                  ),
+                  style: TextStyle(color: Colors.white),
                 ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orangeAccent,
-                shape: BeveledRectangleBorder(
-                    side: BorderSide(
-                  color: Colors.black,
-                  width: 1,
-                )),
-              ),
+                SizedBox(height: 16),
+                TextFormField(
+                  controller: description,
+                  decoration: InputDecoration(
+                    labelText: 'Product Description',
+                    labelStyle: TextStyle(color: Colors.white),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    border: OutlineInputBorder(),
+                  ),
+                  style: TextStyle(color: Colors.white),
+                ),
+                SizedBox(height: 16),
+                TextFormField(
+                  controller: price,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Product Price',
+                    labelStyle: TextStyle(color: Colors.white),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    border: OutlineInputBorder(),
+                  ),
+                  style: TextStyle(color: Colors.white),
+                ),
+                SizedBox(height: 32),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    selectAndUploadImage();
+                  },
+                  icon: Icon(Icons.camera_alt),
+                  label: Text("Select Product Image"),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.amber[300],
+                  ),
+                ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    if (downloadUrl.isEmpty) {
+                      print("Image URL is empty");
+                    } else {
+                      add_data(name, price, description, downloadUrl);
+                      name.clear();
+                      price.clear();
+                      description.clear();
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: Text("Add Product"),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.amber[300],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      side: BorderSide(
+                        color: Colors.black,
+                        width: 1,
+                      ),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  ),
+                ),
+              ],
             ),
           ),
-        ]),
+        ),
       ),
     );
   }
 
-  void selectanduploadimage() async {
-    String unique_name = DateTime.now().millisecondsSinceEpoch.toString();
+  void selectAndUploadImage() async {
+    String uniqueName = DateTime.now().millisecondsSinceEpoch.toString();
     ImagePicker imagePicker = ImagePicker();
     XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
     print('path == ${file?.path}');
@@ -103,12 +133,12 @@ class _CartState extends State<Cart> {
       print("File is empty");
     } else {
       try {
-        Reference referenceroot = FirebaseStorage.instance.ref();
-        Reference reference = referenceroot.child('images');
-        Reference refer = reference.child(unique_name);
-        await refer.putFile(File('${file.path}'));
-        downloadUrl = await refer.getDownloadURL();
-        print("Upload sucessfull");
+        Reference rootReference = FirebaseStorage.instance.ref();
+        Reference imageReference = rootReference.child('images');
+        Reference fileReference = imageReference.child(uniqueName);
+        await fileReference.putFile(File('${file.path}'));
+        downloadUrl = await fileReference.getDownloadURL();
+        print("Upload successful");
       } catch (e) {
         print(e.toString());
       }

@@ -1,7 +1,5 @@
-// import 'package:firebase/firebase.dart';
-// import 'package:firebaseownpractice/Function/functions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebaseownpractice/home.dart';
+import './home.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'Function/functions.dart';
@@ -28,288 +26,230 @@ class UsersState extends State<Users> {
   Widget build(BuildContext context) {
     String email = widget.email;
     return Scaffold(
-      appBar: AppBar(title: Text("Admin Panel")),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 10.0, bottom: 10),
-        child: Column(
-          children: [
-            Text(
-              "Current Admin = ${email}",
-              style: TextStyle(fontSize: 20, color: Colors.black),
-            ),
-            Container(
-              color: Colors.transparent,
-              width: double.infinity,
-              height: 6,
-            ),
-            Expanded(
+      appBar:
+          AppBar(title: Text("Admin Panel"), backgroundColor: Colors.indigo),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.indigo, Colors.deepPurple],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(15),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Current Admin:",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 5),
+              Text(
+                email,
+                style: TextStyle(fontSize: 16),
+              ),
+              Divider(),
+              Expanded(
                 child: StreamBuilder<QuerySnapshot>(
-              stream: emails,
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return CircularProgressIndicator();
-                } else {
-                  return ListView.builder(
-                    itemCount: snapshot.data!.docs.length,
-                    itemBuilder: (context, index) {
-                      final document = snapshot.data!.docs[index];
-                      final data = document.data() as Map<String, dynamic>?;
-                      var id = document.id;
-                      return Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black, width: 1),
-                          ),
-                          child: ListTile(
-                              title: Row(
-                            children: [
-                              Container(
-                                width: 89,
-                                child: Text(
-                                  (data as Map<String, dynamic>)['email'],
-                                  style: TextStyle(
-                                      fontSize: 10,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold),
+                  stream: emails,
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(child: CircularProgressIndicator());
+                    } else {
+                      return ListView.builder(
+                        itemCount: snapshot.data!.docs.length,
+                        itemBuilder: (context, index) {
+                          final document = snapshot.data!.docs[index];
+                          final data = document.data() as Map<String, dynamic>?;
+                          var id = document.id;
+                          return Card(
+                            elevation: 2,
+                            margin: EdgeInsets.symmetric(vertical: 5),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: ListTile(
+                              title: Text(
+                                (data as Map<String, dynamic>)['email'],
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              Row(
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Column(
+                                  SizedBox(height: 5),
+                                  Text(
+                                    "Update Permission:",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Row(
                                     children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 10.0, bottom: 10.0),
-                                        child: Text(
-                                          "Update",
-                                          style: TextStyle(
-                                              fontSize: 15,
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.bold),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            isupdateallowu = true;
+                                            FirebaseFirestore.instance
+                                                .collection('emails')
+                                                .doc(id)
+                                                .update({
+                                              'isupdateAllowed': isupdateallowu
+                                            }).then((_) {
+                                              setState(() {
+                                                FirebaseFirestore.instance
+                                                    .collection('emails')
+                                                    .doc(id)
+                                                    .update({
+                                                  'isupdateAllowed':
+                                                      isupdateallowu
+                                                });
+                                                print(isupdateallowu);
+                                                allowupdate(isupdateallowu);
+                                              });
+                                            });
+                                          });
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          primary: Colors.green,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                          ),
                                         ),
+                                        child: Text("Allow"),
                                       ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            TextButton(
-                                                onPressed: () {
-                                                  setState(() {
-                                                    FirebaseFirestore.instance
-                                                        .collection('emails')
-                                                        .doc(id)
-                                                        .update({
-                                                      'isupdateAllowed': true
-                                                    }).then((_) => {
-                                                              setState(() {
-                                                                FirebaseFirestore
-                                                                    .instance
-                                                                    .collection(
-                                                                        'emails')
-                                                                    .doc(id)
-                                                                    .update({
-                                                                  'isupdateAllowed':
-                                                                      true
-                                                                });
-                                                                isupdateallowu =
-                                                                    true;
-                                                                print(
-                                                                    isupdateallowu);
-                                                                // Home().check("Allow is pressed");
-                                                                allowupdate(
-                                                                    isupdateallowu);
-                                                                to();
-
-                                                                Navigator
-                                                                    .pushReplacement(
-                                                                        context,
-                                                                        MaterialPageRoute(
-                                                                          builder: (context) =>
-                                                                              Home(email: email),
-                                                                        ));
-                                                              })
-                                                            });
-                                                  });
-                                                },
-                                                child: Text(
-                                                  "Allow",
-                                                  style: TextStyle(
-                                                      color: Colors
-                                                          .lightBlue[300]),
-                                                )),
-                                            TextButton(
-                                                onPressed: () {
-                                                  setState(() {
-                                                    FirebaseFirestore.instance
-                                                        .collection('emails')
-                                                        .doc(id)
-                                                        .update({
-                                                      'isupdateAllowed': false
-                                                    }).then((_) => {
-                                                              setState(() {
-                                                                FirebaseFirestore
-                                                                    .instance
-                                                                    .collection(
-                                                                        'emails')
-                                                                    .doc(id)
-                                                                    .update({
-                                                                  'isupdateAllowed':
-                                                                      false
-                                                                });
-                                                                isupdateallowu =
-                                                                    false;
-                                                                print(
-                                                                    isupdateallowu);
-                                                                // Home().check("Allow is pressed");
-                                                                allowupdate(
-                                                                    isupdateallowu);
-                                                                to();
-                                                                Navigator
-                                                                    .pushReplacement(
-                                                                        context,
-                                                                        MaterialPageRoute(
-                                                                          builder: (context) =>
-                                                                              Home(email: email),
-                                                                        ));
-                                                              })
-                                                            });
-                                                  });
-                                                },
-                                                child: Text(
-                                                  "Deny",
-                                                  style: TextStyle(
-                                                      color: Colors.red),
-                                                )),
-                                          ],
+                                      SizedBox(width: 10),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            isupdateallowu = false;
+                                            FirebaseFirestore.instance
+                                                .collection('emails')
+                                                .doc(id)
+                                                .update({
+                                              'isupdateAllowed': isupdateallowu
+                                            }).then((_) {
+                                              setState(() {
+                                                FirebaseFirestore.instance
+                                                    .collection('emails')
+                                                    .doc(id)
+                                                    .update({
+                                                  'isupdateAllowed':
+                                                      isupdateallowu
+                                                });
+                                                print(isupdateallowu);
+                                                allowupdate(isupdateallowu);
+                                              });
+                                            });
+                                          });
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          primary: Colors.red,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                          ),
                                         ),
+                                        child: Text("Deny"),
                                       ),
                                     ],
                                   ),
-                                  Column(
+                                  SizedBox(height: 10),
+                                  Text(
+                                    "Delete Permission:",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Row(
                                     children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 10.0, bottom: 10.0),
-                                        child: Text(
-                                          "Delete",
-                                          style: TextStyle(
-                                              fontSize: 15,
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.bold),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            FirebaseFirestore.instance
+                                                .collection('emails')
+                                                .doc(id)
+                                                .update({
+                                              'isdeleteAllowed': true
+                                            }).then((_) {
+                                              setState(() {
+                                                FirebaseFirestore.instance
+                                                    .collection('emails')
+                                                    .doc(id)
+                                                    .update({
+                                                  'isdeleteAllowed': true
+                                                });
+                                                isdeleteallowu = true;
+                                                print(isdeleteallowu);
+                                                allowdelete(isdeleteallowu);
+                                              });
+                                            });
+                                          });
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          primary: Colors.green,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                          ),
                                         ),
+                                        child: Text("Allow"),
                                       ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            TextButton(
-                                                onPressed: () {
-                                                  setState(() {
-                                                    FirebaseFirestore.instance
-                                                        .collection('emails')
-                                                        .doc(id)
-                                                        .update({
-                                                      'isdeleteAllowed': true
-                                                    }).then((_) => {
-                                                              setState(() {
-                                                                FirebaseFirestore
-                                                                    .instance
-                                                                    .collection(
-                                                                        'emails')
-                                                                    .doc(id)
-                                                                    .update({
-                                                                  'isdeleteAllowed':
-                                                                      true
-                                                                });
-                                                                isdeleteallowu =
-                                                                    true;
-                                                                print(
-                                                                    isdeleteallowu);
-                                                                // Home().check("Allow is pressed");
-                                                                allowdelete(
-                                                                    isdeleteallowu);
-                                                                todelete();
-
-                                                                Navigator
-                                                                    .pushReplacement(
-                                                                        context,
-                                                                        MaterialPageRoute(
-                                                                          builder: (context) =>
-                                                                              Home(email: email),
-                                                                        ));
-                                                              })
-                                                            });
-                                                  });
-                                                },
-                                                child: Text(
-                                                  "Allow",
-                                                  style: TextStyle(
-                                                      color: Colors
-                                                          .lightBlue[300]),
-                                                )),
-                                            TextButton(
-                                                onPressed: () {
-                                                  setState(() {
-                                                    FirebaseFirestore.instance
-                                                        .collection('emails')
-                                                        .doc(id)
-                                                        .update({
-                                                      'isdeleteAllowed': false
-                                                    }).then((_) => {
-                                                              setState(() {
-                                                                FirebaseFirestore
-                                                                    .instance
-                                                                    .collection(
-                                                                        'emails')
-                                                                    .doc(id)
-                                                                    .update({
-                                                                  'isdeleteAllowed':
-                                                                      false
-                                                                });
-                                                                isdeleteallowu =
-                                                                    false;
-                                                                print(
-                                                                    isdeleteallowu);
-                                                                // Home().check("Allow is pressed");
-                                                                allowdelete(
-                                                                    isdeleteallowu);
-                                                                todelete();
-
-                                                                Navigator
-                                                                    .pushReplacement(
-                                                                        context,
-                                                                        MaterialPageRoute(
-                                                                          builder: (context) =>
-                                                                              Home(email: email),
-                                                                        ));
-                                                              })
-                                                            });
-                                                  });
-                                                },
-                                                child: Text(
-                                                  "Deny",
-                                                  style: TextStyle(
-                                                      color: Colors.red),
-                                                )),
-                                          ],
+                                      SizedBox(width: 10),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            FirebaseFirestore.instance
+                                                .collection('emails')
+                                                .doc(id)
+                                                .update({
+                                              'isdeleteAllowed': false
+                                            }).then((_) {
+                                              setState(() {
+                                                FirebaseFirestore.instance
+                                                    .collection('emails')
+                                                    .doc(id)
+                                                    .update({
+                                                  'isdeleteAllowed': false
+                                                });
+                                                isdeleteallowu = false;
+                                                print(isdeleteallowu);
+                                                allowdelete(isdeleteallowu);
+                                              });
+                                            });
+                                          });
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          primary: Colors.red,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                          ),
                                         ),
+                                        child: Text("Deny"),
                                       ),
                                     ],
                                   ),
                                 ],
                               ),
-                            ],
-                          )));
-                    },
-                  );
-                }
-              },
-            ))
-            /* ,*/
-          ],
+                            ),
+                          );
+                        },
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

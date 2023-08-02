@@ -18,21 +18,29 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  String searc = "";
+  String search = "";
   TextEditingController searchController = TextEditingController();
 
   @override
   void dispose() {
-    searchController.dispose(); // Dispose the TextEditingController
+    searchController.dispose();
     super.dispose();
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
-    bool isupdateallow = to();
-    bool isdeleteallow = todelete();
+    bool isUpdateAllowed = to();
+    bool isDeleteAllowed = todelete();
 
-    String emails = widget.email;
+    void initState() {
+      // TODO: implement initState
+      isDeleteAllowed = todelete();
+      isUpdateAllowed = to();
+      super.initState();
+    }
+
+    String email = widget.email;
 
     var users = FirebaseFirestore.instance.collection("users").snapshots();
 
@@ -40,35 +48,40 @@ class HomeState extends State<Home> {
       appBar: AppBar(
         title: Text("Home"),
         actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: IconButton(
-                onPressed: () {
-                  if (emails == "admin@gmail.com") {
-                    // fetchData();
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Users(email: emails),
-                        ));
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text('You are unable to Access this page !')));
-                  }
-                },
-                icon: Icon(Icons.person)),
+          IconButton(
+            onPressed: () {
+              if (email == "admin@gmail.com") {
+                // fetchData();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Users(email: email),
+                  ),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('You are unable to access this page!'),
+                  ),
+                );
+              }
+            },
+            icon: Icon(Icons.person),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: IconButton(
-              onPressed: () {
-                signout(context);
-              },
-              icon: Icon(Icons.logout),
-            ),
+          IconButton(
+            onPressed: () {
+              signout(context);
+            },
+            icon: Icon(Icons.logout),
           ),
         ],
         automaticallyImplyLeading: false,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(10),
+          ),
+        ),
+        backgroundColor: Colors.indigo,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -83,6 +96,13 @@ class HomeState extends State<Home> {
       ),
       body: Container(
         padding: EdgeInsets.all(25),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.indigo, Colors.deepPurple],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
         child: Column(
           children: [
             searchBox(),
@@ -92,7 +112,9 @@ class HomeState extends State<Home> {
                 stream: users,
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
-                    return CircularProgressIndicator();
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
                   } else {
                     return ListView.builder(
                       itemCount: snapshot.data!.docs.length,
@@ -102,166 +124,107 @@ class HomeState extends State<Home> {
                         var url = (data as Map<String, dynamic>)['image'];
                         var id = document.id;
 
-                        TextEditingController namee = TextEditingController(
-                            text: (data as Map<String, dynamic>)['name']);
-                        String nameee = namee.text.trim();
-                        TextEditingController pricee = TextEditingController(
-                            text: (data as Map<String, dynamic>)['price']);
-                        String priceee = pricee.text.trim();
-                        TextEditingController descriptionn =
+                        TextEditingController nameController =
+                            TextEditingController(
+                                text: (data as Map<String, dynamic>)['name']);
+                        String name = nameController.text.trim();
+                        TextEditingController priceController =
+                            TextEditingController(
+                                text: (data as Map<String, dynamic>)['price']);
+                        String price = priceController.text.trim();
+                        TextEditingController descriptionController =
                             TextEditingController(
                                 text: (data
                                     as Map<String, dynamic>)['description']);
-                        String descriptionnn = descriptionn.text.trim();
+                        String description = descriptionController.text.trim();
 
-                        if (searc.isEmpty) {
-                          return Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black, width: 1),
+                        if (search.isEmpty ||
+                            data['name']
+                                .toString()
+                                .contains(search.toLowerCase())) {
+                          return Card(
+                            color: Color.fromARGB(147, 196, 196, 196),
+                            elevation: 4,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
                             ),
                             child: ListTile(
-                              enabled: isupdateallow,
+                              tileColor: Colors.transparent,
+                              enabled: isUpdateAllowed,
                               onTap: () {
-                                if (isupdateallow == true) {
+                                if (isUpdateAllowed) {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => Update(nameee,
-                                            descriptionnn, priceee, id, url)),
+                                      builder: (context) => Update(
+                                        name,
+                                        description,
+                                        price,
+                                        id,
+                                        url,
+                                      ),
+                                    ),
                                   );
-                                } else if (isupdateallow == false) {
+                                } else {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          content: Text(
-                                              'You are unable to Update any field !')));
+                                    SnackBar(
+                                      content: Text(
+                                          'You are unable to update any field!'),
+                                    ),
+                                  );
                                 }
                               },
-                              trailing: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Colors.red,
-                                ),
-                                height: 30,
-                                width: 30,
-                                child: IconButton(
-                                  iconSize: 15,
-                                  onPressed: () {
-                                    if (isdeleteallow == true) {
-                                      var collection = FirebaseFirestore
-                                          .instance
-                                          .collection('users');
-                                      collection.doc(id).delete();
-                                    } else {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              content: Text(
-                                                  'You are unable to Delete any field !')));
-                                    }
-                                  },
-                                  icon: Icon(
-                                    Icons.delete,
-                                    color: Colors.white,
-                                  ),
-                                ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
                               ),
-                              title: Text(nameee),
                               leading: Container(
                                 height: 80,
                                 width: 80,
-                                child: Image.network(
-                                  '${url}',
-                                  height: 80,
-                                  width: 80,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  image: DecorationImage(
+                                    image: NetworkImage(url),
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
-                                // : Container()
                               ),
-                              subtitle: Row(
+                              title: Text(name),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Column(
-                                    children: [
-                                      Text(descriptionnn),
-                                      Text(priceee),
-                                    ],
+                                  Text(description),
+                                  Text(
+                                    '\$$price',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ],
                               ),
-                            ),
-                          );
-                        } else if (data['name']
-                            .toString()
-                            .contains(searc.toLowerCase())) {
-                          return Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black, width: 1),
-                            ),
-                            child: ListTile(
-                              enabled: isupdateallow,
-                              onTap: () {
-                                if (isupdateallow == true) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Update(nameee,
-                                            descriptionnn, priceee, id, url)),
-                                  );
-                                } else if (isupdateallow == false) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
+                              trailing: IconButton(
+                                onPressed: () {
+                                  if (isDeleteAllowed) {
+                                    var collection = FirebaseFirestore.instance
+                                        .collection('users');
+                                    collection.doc(id).delete();
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                          content: Text(
-                                              'You are unable to Update any field !')));
-                                }
-                              },
-                              trailing: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
+                                        content: Text(
+                                            'You are unable to delete any field!'),
+                                      ),
+                                    );
+                                  }
+                                },
+                                icon: Icon(
+                                  Icons.delete,
                                   color: Colors.red,
                                 ),
-                                height: 30,
-                                width: 30,
-                                child: IconButton(
-                                  iconSize: 15,
-                                  onPressed: () {
-                                    if (isdeleteallow == true) {
-                                      var collection = FirebaseFirestore
-                                          .instance
-                                          .collection('users');
-                                      collection.doc(id).delete();
-                                    } else {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              content: Text(
-                                                  'You are unable to Delete any field !')));
-                                    }
-                                  },
-                                  icon: Icon(
-                                    Icons.delete,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                              title: Text(nameee),
-                              leading: Container(
-                                height: 80,
-                                width: 80,
-                                child: Image.network(
-                                  '${url}',
-                                  height: 80,
-                                  width: 80,
-                                  scale: 1.0,
-                                ),
-                              ),
-                              subtitle: Row(
-                                children: [
-                                  Column(
-                                    children: [
-                                      Text(data['description']),
-                                      Text(data['price']),
-                                    ],
-                                  ),
-                                ],
                               ),
                             ),
                           );
+                        } else {
+                          return Container();
                         }
                       },
                     );
@@ -278,26 +241,31 @@ class HomeState extends State<Home> {
   Widget searchBox() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Color.fromARGB(231, 196, 196, 196),
         borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: Offset(0, 2),
+          ),
+        ],
       ),
       child: TextField(
-        onTap: () {
-          print('workin');
-        },
+        controller: searchController,
         onChanged: (value) {
-          print('Working');
           setState(() {
-            searc = value;
+            search = value;
           });
         },
-        decoration: const InputDecoration(
-          hoverColor: Colors.yellow,
+        decoration: InputDecoration(
           prefixIcon: Icon(Icons.search),
-          prefixIconColor: Colors.black,
           prefixIconConstraints: BoxConstraints(maxHeight: 20, minWidth: 20),
           contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          border: InputBorder.none,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           hintText: 'Search',
         ),
       ),

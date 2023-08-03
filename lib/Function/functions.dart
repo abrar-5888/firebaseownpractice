@@ -1,3 +1,5 @@
+import 'package:firebaseownpractice/email_verification.dart';
+
 import '../login.dart';
 import 'package:flutter/material.dart';
 import '../home.dart';
@@ -7,36 +9,54 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 // login page functions !
 
-void signin(TextEditingController emailcontroller,
-    TextEditingController passcontroller, BuildContext context) async {
+void signin(
+  TextEditingController emailcontroller,
+  TextEditingController passcontroller,
+  BuildContext context,
+) async {
   String email = emailcontroller.text.trim();
   String pass = passcontroller.text.trim();
-  String userid;
+
   if (email == "" || pass == "") {
-    print("Plz fill all fields ! ");
-  } else {
-    try {
-      EasyLoading.show(status: "Loading");
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: pass);
+    print("Please fill all fields!");
+    return;
+  }
 
-      EasyLoading.showSuccess("Success ");
+  try {
+    EasyLoading.show(status: "Loading");
+    UserCredential userCredential = await FirebaseAuth.instance
+        .signInWithEmailAndPassword(email: email, password: pass);
 
-      if (userCredential != null) {
-        await saveEmailToFirestore(email);
-        userid = FirebaseAuth.instance.currentUser!.uid;
-        print(userid);
-        Navigator.popUntil(context, (route) => route.isFirst);
+    User? user = userCredential.user;
+    bool isverify = user?.emailVerified ?? false;
 
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Home(email: email),
-            ));
-      }
-    } on FirebaseAuthException catch (ex) {
-      EasyLoading.showError(ex.code.toString());
+    if (isverify) {
+      EasyLoading.dismiss();
+      EasyLoading.showSuccess("Success");
+
+      await saveEmailToFirestore(email);
+
+      String userid = FirebaseAuth.instance.currentUser!.uid;
+      print(userid);
+
+      Navigator.popUntil(context, (route) => route.isFirst);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Home(email: email)),
+      );
+    } else {
+      EasyLoading.dismiss();
+      ScaffoldMessenger(
+        child: Text("Please Verify your Email"),
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Email_verify()),
+      );
     }
+  } on FirebaseAuthException catch (ex) {
+    EasyLoading.dismiss();
+    EasyLoading.showError(ex.code.toString());
   }
 }
 
@@ -74,11 +94,16 @@ void Create_Account(
       EasyLoading.show(status: "Loading");
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: pass);
-
-      EasyLoading.showSuccess("Success ");
+      EasyLoading.show(status: "Verify Your Email");
       if (userCredential != null) {
         await saveEmailToFirestore(email);
-        Navigator.pop(context);
+
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Email_verify(),
+            ));
+        EasyLoading.showSuccess("User Created");
         print("user created");
       }
     } on FirebaseAuthException catch (ex) {

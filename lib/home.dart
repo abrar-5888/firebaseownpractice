@@ -6,6 +6,8 @@ import '../update.dart';
 import 'Function/functions.dart';
 import 'package:flutter/material.dart';
 
+import 'drawer.dart';
+
 class Home extends StatefulWidget {
   final String email;
 
@@ -75,7 +77,6 @@ class HomeState extends State<Home> {
             icon: Icon(Icons.logout),
           ),
         ],
-        automaticallyImplyLeading: false,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
             bottom: Radius.circular(10),
@@ -95,6 +96,7 @@ class HomeState extends State<Home> {
         },
         child: Icon(Icons.add),
       ),
+      drawer: DrawerWidget(),
       body: Container(
         padding: EdgeInsets.all(25),
         decoration: BoxDecoration(

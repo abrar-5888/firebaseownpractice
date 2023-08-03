@@ -1,4 +1,5 @@
 import 'package:firebaseownpractice/email_verification.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../login.dart';
 import 'package:flutter/material.dart';
@@ -62,7 +63,7 @@ void signin(
 
 // save email to firestore
 
-Future<void> saveEmailToFirestore(String email) async {
+Future<void> saveEmailToFirestore(String? email) async {
   try {
     await FirebaseFirestore.instance.collection('emails').doc(email).set({
       'email': email,
@@ -106,9 +107,51 @@ void Create_Account(
         EasyLoading.showSuccess("User Created");
         print("user created");
       }
-    } on FirebaseAuthException catch (ex) {
-      print(ex.code.toString());
+    } catch (ex) {
+      print(ex.toString());
     }
+  }
+}
+
+//  SIGN IN WITH GOOGLE
+
+void signingoogle(BuildContext context) async {
+  try {
+    GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    if (googleUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Please select a Google account")),
+      );
+      return;
+    }
+
+    GoogleSignInAuthentication? googleSignInAuth =
+        await googleUser?.authentication;
+    AuthCredential authCredential = GoogleAuthProvider.credential(
+      accessToken: googleSignInAuth?.accessToken,
+      idToken: googleSignInAuth?.idToken,
+    );
+
+    UserCredential userCredential =
+        await FirebaseAuth.instance.signInWithCredential(authCredential);
+    String? email = userCredential.user?.email;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Logged in as $email")),
+    );
+
+    if (email != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: ((context) => Home(email: email))),
+      );
+    }
+  } catch (e) {
+    print("Sign-in canceled: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Sign-in canceled")),
+    );
   }
 }
 
@@ -116,6 +159,7 @@ void Create_Account(
 
 void signout(BuildContext context) async {
   await FirebaseAuth.instance.signOut();
+  await GoogleSignIn().signOut();
   Navigator.popUntil(context, (route) => route.isFirst);
   Navigator.pushReplacement(
       context,

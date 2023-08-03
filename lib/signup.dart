@@ -132,6 +132,31 @@ class _SignupState extends State<Signup> {
                   ),
                 ),
               ),
+              SizedBox(
+                height: 16,
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    signingoogle(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      backgroundColor: Colors.blueGrey[300]),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset("assets/icons/google.png"),
+                      SizedBox(
+                        width: 15,
+                      ),
+                      Text(
+                        "Continue with Google",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ],
+                  ))
             ],
           ),
         ),

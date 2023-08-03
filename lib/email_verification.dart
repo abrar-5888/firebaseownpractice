@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebaseownpractice/home.dart';
 import 'package:flutter/material.dart';
 import 'Function/functions.dart';
@@ -19,7 +19,7 @@ class _Email_verifyState extends State<Email_verify> {
 
   @override
   void initState() {
-    isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
+    isEmailVerified = auth.FirebaseAuth.instance.currentUser!.emailVerified;
     if (!isEmailVerified) {
       sendVerificationEmail();
 
@@ -35,16 +35,16 @@ class _Email_verifyState extends State<Email_verify> {
   }
 
   void checkEmailVerified() async {
-    await FirebaseAuth.instance.currentUser!.reload();
+    await auth.FirebaseAuth.instance.currentUser!.reload();
     setState(() {
-      isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
+      isEmailVerified = auth.FirebaseAuth.instance.currentUser!.emailVerified;
     });
     if (isEmailVerified) timer?.cancel();
   }
 
   void sendVerificationEmail() async {
     try {
-      final user = FirebaseAuth.instance.currentUser!;
+      final user = auth.FirebaseAuth.instance.currentUser!;
       await user.sendEmailVerification();
       setState(() {
         canResendEmail = false;

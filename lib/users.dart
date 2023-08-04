@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'Function/functions.dart';
 
 class Users extends StatefulWidget {
-  final String email;
+  final String? email;
 
   Users({
     required this.email,
@@ -24,7 +24,7 @@ class UsersState extends State<Users> {
 
   @override
   Widget build(BuildContext context) {
-    String email = widget.email;
+    String? email = widget.email;
     return Scaffold(
       appBar:
           AppBar(title: Text("Admin Panel"), backgroundColor: Colors.orange),
@@ -50,7 +50,7 @@ class UsersState extends State<Users> {
               ),
               SizedBox(height: 5),
               Text(
-                email,
+                "${email}",
                 style: TextStyle(fontSize: 16),
               ),
               Divider(),

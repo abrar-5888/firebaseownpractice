@@ -1,6 +1,5 @@
 import 'package:firebaseownpractice/email_verification.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
 import '../login.dart';
 import 'package:flutter/material.dart';
 import '../home.dart';
@@ -8,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+String? gogemail;
 // login page functions !
 
 void signin(
@@ -67,6 +67,7 @@ Future<void> saveEmailToFirestore(String? email) async {
   try {
     await FirebaseFirestore.instance.collection('emails').doc(email).set({
       'email': email,
+      // 'google-email': gogemail,
       'isupdateAllowed': isupdateallowu,
       'isdeleteAllowed': isdeleteallowu
     });
@@ -104,7 +105,6 @@ void Create_Account(
             MaterialPageRoute(
               builder: (context) => Email_verify(),
             ));
-        EasyLoading.showSuccess("User Created");
         print("user created");
       }
     } catch (ex) {
@@ -123,7 +123,6 @@ void signingoogle(BuildContext context) async {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Please select a Google account")),
       );
-      return;
     }
 
     GoogleSignInAuthentication? googleSignInAuth =
@@ -135,17 +134,21 @@ void signingoogle(BuildContext context) async {
 
     UserCredential userCredential =
         await FirebaseAuth.instance.signInWithCredential(authCredential);
-    String? email = userCredential.user?.email;
+    gogemail = userCredential.user?.email;
+    String? name = userCredential.user?.displayName;
+    if (userCredential != null) {
+      await saveEmailToFirestore(gogemail);
+      bool isverify = userCredential.user?.emailVerified ?? false;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Logged in as $email")),
-    );
-
-    if (email != null) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: ((context) => Home(email: email))),
-      );
+      if (gogemail != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: ((context) => Home(email: gogemail))),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Logged in as $name")),
+        );
+      }
     }
   } catch (e) {
     print("Sign-in canceled: $e");

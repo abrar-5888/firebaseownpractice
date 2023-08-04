@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'drawer.dart';
 
 class Home extends StatefulWidget {
-  final String email;
+  final String? email;
 
   Home({
     required this.email,
@@ -42,7 +42,7 @@ class HomeState extends State<Home> {
       super.initState();
     }
 
-    String email = widget.email;
+    String? email = widget.email;
 
     var users = FirebaseFirestore.instance.collection("users").snapshots();
 
@@ -52,7 +52,7 @@ class HomeState extends State<Home> {
         actions: [
           IconButton(
             onPressed: () {
-              if (email == "admin@gmail.com") {
+              if (email == "abrararshad32@gmail.com") {
                 // fetchData();
                 Navigator.push(
                   context,
@@ -69,12 +69,6 @@ class HomeState extends State<Home> {
               }
             },
             icon: Icon(Icons.person),
-          ),
-          IconButton(
-            onPressed: () {
-              signout(context);
-            },
-            icon: Icon(Icons.logout),
           ),
         ],
         shape: RoundedRectangleBorder(

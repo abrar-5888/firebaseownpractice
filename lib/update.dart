@@ -193,18 +193,42 @@ class _UpdateState extends State<Update> {
   void selectAndUpdateImage() async {
     String uniqueName = DateTime.now().millisecondsSinceEpoch.toString();
     ImagePicker imagePicker = ImagePicker();
-    XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
+
+    // Show a dialog to let the user choose between gallery and camera
+    final source = await showDialog<ImageSource>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Select Image Source'),
+          actions: [
+            TextButton(
+              child: Text('Gallery'),
+              onPressed: () => Navigator.pop(context, ImageSource.gallery),
+            ),
+            TextButton(
+              child: Text('Camera'),
+              onPressed: () => Navigator.pop(context, ImageSource.camera),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (source == null) {
+      print("No image source selected");
+      return;
+    }
+
+    XFile? file = await imagePicker.pickImage(source: source);
+
     print('path == ${file?.path}');
+
     if (file == null) {
       print("File is empty");
     } else {
-      Reference referenceimagetoupdate =
-          FirebaseStorage.instance.refFromURL(uurl);
       try {
-        // Reference rootReference = FirebaseStorage.instance.ref();
-        // Reference imageReference = rootReference.child('images');
-        // Reference fileReference = imageReference.child(uniqueName);
-
+        Reference referenceimagetoupdate =
+            FirebaseStorage.instance.refFromURL(uurl);
         await referenceimagetoupdate.putFile(File('${file.path}'));
         downloadUrl = await referenceimagetoupdate.getDownloadURL();
         print("Upload successful");

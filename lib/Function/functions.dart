@@ -132,10 +132,12 @@ void signingoogle(BuildContext context) async {
       idToken: googleSignInAuth?.idToken,
     );
 
+    EasyLoading.show(status: "Loading");
     UserCredential userCredential =
         await FirebaseAuth.instance.signInWithCredential(authCredential);
     gogemail = userCredential.user?.email;
     String? name = userCredential.user?.displayName;
+    EasyLoading.showSuccess('Success');
     if (userCredential != null) {
       await saveEmailToFirestore(gogemail);
       bool isverify = userCredential.user?.emailVerified ?? false;

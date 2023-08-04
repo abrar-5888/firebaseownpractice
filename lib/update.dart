@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
 import 'Function/functions.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -33,6 +36,7 @@ class _UpdateState extends State<Update> {
   TextEditingController name = TextEditingController();
   TextEditingController price = TextEditingController();
   TextEditingController description = TextEditingController();
+  String uurl = "";
 
   @override
   void initState() {
@@ -40,6 +44,7 @@ class _UpdateState extends State<Update> {
     name.text = widget.nameee;
     description.text = widget.descriptionnn;
     price.text = widget.priceee;
+    uurl = widget.url;
   }
 
   @override
@@ -102,7 +107,8 @@ class _UpdateState extends State<Update> {
                 SizedBox(height: 16),
                 ElevatedButton.icon(
                   onPressed: () async {
-                    await selectAndUpdateImage();
+                    selectAndUpdateImage();
+                    print(downloadUrl);
                   },
                   icon: Icon(Icons.camera_alt),
                   label: Text('Select and Update Image'),
@@ -144,37 +150,67 @@ class _UpdateState extends State<Update> {
     );
   }
 
-  Future<void> selectAndUpdateImage() async {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-      allowMultiple: false,
-    );
+  // Future<void> selectAndUpdateImage() async {
+  //   final result = await FilePicker.platform.pickFiles(
+  //     type: FileType.image,
+  //   );
+  //   if (result != null) {
+  //     final file = result.files.single;
 
-    if (result != null) {
-      final file = result.files.single;
-      final blob = blobFromUint8List(file.bytes!);
+  //     if (file.bytes != null) {
+  //       final blob = blobFromUint8List(file.bytes!);
+  //       print('BLOB is NOT EMPTY');
 
-      final storageRef = firebase_storage.FirebaseStorage.instance
-          .ref()
-          .child('images/${DateTime.now().millisecondsSinceEpoch}');
+  //       final storageRef = firebase_storage.FirebaseStorage.instance
+  //           .ref()
+  //           .child('images/${DateTime.now().millisecondsSinceEpoch}');
 
-      final uploadTask = storageRef.putData(blob);
-      uploadTask.then((snapshot) async {
-        if (snapshot.state == firebase_storage.TaskState.success) {
-          downloadUrl = await snapshot.ref.getDownloadURL();
-          print('Image updated successfully. Download URL: $downloadUrl');
-        } else {
-          print('Image update failed.');
-        }
-      }).catchError((error) {
-        print('Error during image update: $error');
-      });
+  //       final uploadTask = storageRef.putData(blob);
+  //       print("File = =  ${file}");
+  //       print('upload complete == ${uploadTask}');
+  //       uploadTask.then((snapshot) async {
+  //         if (snapshot.state == firebase_storage.TaskState.success) {
+  //           downloadUrl = await snapshot.ref.getDownloadURL();
+  //           print('Image updated successfully. Download URL: $downloadUrl');
+  //         } else {
+  //           print('Image update failed.');
+  //         }
+  //       }).catchError((error) {
+  //         print('Error during image update: $error');
+  //       });
+  //     } else {
+  //       print('No image selected.');
+  //     }
+  //   } else {
+  //     print('result == empty     ${result}');
+  //   }
+  // }
+
+  // Uint8List blobFromUint8List(Uint8List uint8List) {
+  //   return uint8List;
+  // }
+
+  void selectAndUpdateImage() async {
+    String uniqueName = DateTime.now().millisecondsSinceEpoch.toString();
+    ImagePicker imagePicker = ImagePicker();
+    XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
+    print('path == ${file?.path}');
+    if (file == null) {
+      print("File is empty");
     } else {
-      print('No image selected.');
-    }
-  }
+      Reference referenceimagetoupdate =
+          FirebaseStorage.instance.refFromURL(uurl);
+      try {
+        // Reference rootReference = FirebaseStorage.instance.ref();
+        // Reference imageReference = rootReference.child('images');
+        // Reference fileReference = imageReference.child(uniqueName);
 
-  Uint8List blobFromUint8List(Uint8List uint8List) {
-    return uint8List;
+        await referenceimagetoupdate.putFile(File('${file.path}'));
+        downloadUrl = await referenceimagetoupdate.getDownloadURL();
+        print("Upload successful");
+      } catch (e) {
+        print(e.toString());
+      }
+    }
   }
 }

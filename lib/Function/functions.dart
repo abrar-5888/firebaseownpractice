@@ -225,26 +225,26 @@ void updateData(
       description.isEmpty ||
       downloadUrl.isEmpty) {
     print("Please fill in all fields");
-  }
+  } else {
+    try {
+      EasyLoading.show(status: 'Updating ...');
+      final docSnapshot = await users.doc(documentID).get();
+      if (!docSnapshot.exists) {
+        print("Document does not exist");
+      }
+      await users.doc(documentID).set({
+        'name': name,
+        'price': price,
+        'description': description,
+        'image': url
+      }, SetOptions(merge: true));
 
-  try {
-    EasyLoading.show(status: 'Updating ...');
-    final docSnapshot = await users.doc(documentID).get();
-    if (!docSnapshot.exists) {
-      print("Document does not exist");
+      EasyLoading.dismiss();
+      print("Updated successfully");
+    } catch (error) {
+      EasyLoading.dismiss();
+      print("Failed to update data: $error");
     }
-    await users.doc(documentID).set({
-      'name': name,
-      'price': price,
-      'description': description,
-      'image': url
-    }, SetOptions(merge: true));
-
-    EasyLoading.dismiss();
-    print("Updated successfully");
-  } catch (error) {
-    EasyLoading.dismiss();
-    print("Failed to update data: $error");
   }
 }
 

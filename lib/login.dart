@@ -130,7 +130,7 @@ class _LoginState extends State<Login> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    backgroundColor: Colors.blueGrey[300]),
+                    backgroundColor: const Color.fromARGB(255, 206, 206, 206)),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -143,7 +143,32 @@ class _LoginState extends State<Login> {
                       style: TextStyle(color: Colors.black),
                     ),
                   ],
-                ))
+                )),
+            SizedBox(
+              height: 16,
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  facebook_login();
+                },
+                style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    backgroundColor: const Color.fromARGB(255, 206, 206, 206)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset("assets/icons/facebook.png"),
+                    SizedBox(
+                      width: 15,
+                    ),
+                    Text(
+                      "Continue with FaceBook",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ],
+                )),
           ]),
         ),
       ),

@@ -143,7 +143,7 @@ class _SignupState extends State<Signup> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      backgroundColor: Colors.blueGrey[300]),
+                      backgroundColor: Color.fromARGB(255, 206, 206, 206)),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -156,7 +156,34 @@ class _SignupState extends State<Signup> {
                         style: TextStyle(color: Colors.black),
                       ),
                     ],
-                  ))
+                  )),
+              SizedBox(
+                height: 16,
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text("Working")));
+                  },
+                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      backgroundColor:
+                          const Color.fromARGB(255, 206, 206, 206)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset("assets/icons/facebook.png"),
+                      SizedBox(
+                        width: 15,
+                      ),
+                      Text(
+                        "Continue with FaceBook",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ],
+                  )),
             ],
           ),
         ),

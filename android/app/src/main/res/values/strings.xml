@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="firebaseownpractice">"Login"</string>
+    
+    <string name="facebook_app_id">677247060539068</string>
+    <string name="fb_login_protocol_scheme">fb1234</string>
+    <string name="facebook_client_token">8dad4e3293e419c7bcd9bbeedbab6cea</string>
+
+
+</resources>

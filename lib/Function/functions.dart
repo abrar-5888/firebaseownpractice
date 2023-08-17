@@ -1,4 +1,5 @@
 import 'package:firebaseownpractice/email_verification.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../login.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 String? gogemail;
+Map<String, dynamic>? userdat;
 // login page functions !
 
 void signin(
@@ -73,6 +75,25 @@ Future<void> saveEmailToFirestore(String? email) async {
     });
   } catch (e) {
     print("Error saving email to Firestore: $e");
+  }
+}
+// login with facebook
+
+void facebook_login() async {
+  final fbresult = await FacebookAuth.instance.login();
+  if (fbresult == LoginStatus.success) {
+    try {
+      OAuthCredential oAuthCredential =
+          FacebookAuthProvider.credential(fbresult.accessToken!.token);
+      await FirebaseAuth.instance.signInWithCredential(oAuthCredential);
+      final userdata = await FacebookAuth.instance.getUserData();
+
+      userdat = userdata;
+    } catch (e) {
+      print("Error");
+    }
+  } else {
+    print("Error");
   }
 }
 
@@ -272,4 +293,4 @@ bool todelete() {
   return isdeleteallowu;
 }
 
-// allow delete from firebase
+  // allow delete from firebase

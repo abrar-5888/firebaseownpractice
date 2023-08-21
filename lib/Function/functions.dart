@@ -79,25 +79,46 @@ Future<void> saveEmailToFirestore(String? email) async {
 }
 // login with facebook
 
-void facebook_login() async {
-  final fbresult = await FacebookAuth.instance.login();
-  if (fbresult == LoginStatus.success) {
-    try {
-      OAuthCredential oAuthCredential =
-          FacebookAuthProvider.credential(fbresult.accessToken!.token);
-      await FirebaseAuth.instance.signInWithCredential(oAuthCredential);
-      final userdata = await FacebookAuth.instance.getUserData();
+// Future facebook_login() async {
+// try {
+// final LoginResult result =
+// await FacebookAuth.instance.login();
+//   switch (result.status) {
+//     case LoginStatus.success:
+//       final AuthCredential facebookCredential =
+//           FacebookAuthProvider.credential(result.accessToken!.token);
+//       final userCredential = await FirebaseAuth.instance
+//           .signInWithCredential(facebookCredential);
+//       print("done");
 
-      userdat = userdata;
-    } catch (e) {
-      print("Error");
+//     default:
+//       return null;
+//   }
+// } on FirebaseAuthException catch (e) {
+//   throw e;
+// }
+Future<void> signInWithFacebook() async {
+  try {
+    final LoginResult result = await FacebookAuth.instance.login();
+    switch (result.status) {
+      case LoginStatus.success:
+        final AuthCredential facebookCredential =
+            FacebookAuthProvider.credential(result.accessToken!.token);
+        final userCredential = await FirebaseAuth.instance
+            .signInWithCredential(facebookCredential);
+
+      default:
+        return null;
     }
-  } else {
-    print("Error");
+  } on FirebaseAuthException catch (e) {
+    throw e;
   }
+  print("working");
 }
 
-// signup functions
+// }
+
+// signup
 
 void Create_Account(
     TextEditingController emailcontroller,
@@ -293,4 +314,4 @@ bool todelete() {
   return isdeleteallowu;
 }
 
-  // allow delete from firebase
+// allow delete from firebase

@@ -149,7 +149,7 @@ class _LoginState extends State<Login> {
             ),
             ElevatedButton(
                 onPressed: () {
-                  facebook_login();
+                  signInWithFacebook();
                 },
                 style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(

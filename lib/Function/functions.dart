@@ -106,16 +106,25 @@ Future<void> signInWithFacebook() async {
             FacebookAuthProvider.credential(result.accessToken!.token);
         final userCredential = await FirebaseAuth.instance
             .signInWithCredential(facebookCredential);
+        // Handle the success case here if needed.
+        // You can return a user object or perform other actions.
+        break;
 
       default:
-        return null;
+        // Handle other cases if needed.
+        // You might return an appropriate value or throw an exception.
+        break;
     }
   } on FirebaseAuthException catch (e) {
-    throw e;
+    // Handle FirebaseAuthException with custom error handling.
+    throw e; // You might want to handle or log the error here.
+  } catch (e) {
+    // Handle other types of exceptions if needed.
+    // This block catches any non-FirebaseAuthException errors.
+    throw e; // You might want to handle or log the error here.
   }
   print("working");
 }
-
 // }
 
 // signup
